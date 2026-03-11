@@ -65,7 +65,7 @@ jobs:
           rm -r "outputFolder"
           
     - name: Publish
-      uses: softprops/action-gh-release@v2
+      uses: softprops/action-gh-release@v2.4.2
       with:
           tag_name: 3.0.x
           files: App*
