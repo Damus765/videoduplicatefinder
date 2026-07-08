@@ -1154,15 +1154,7 @@ namespace VDF.GUI.ViewModels {
 		internal static async Task RevealInFileManager(string filePath) {
 			try {
 				if (OperatingSystem.IsWindows()) {
-					try {
-						Utils.ShellUtils.ShowInExplorer(filePath);
-					}
-					catch {
-						// Fallback to explorer.exe if shell API fails (Notepad++/Electron pattern)
-						var psi = new ProcessStartInfo("explorer.exe") { UseShellExecute = false };
-						psi.ArgumentList.Add($"/select,{filePath}");
-						Process.Start(psi);
-					}
+					Utils.ShellUtils.ShowInExplorer(filePath);
 				}
 				else if (OperatingSystem.IsMacOS()) {
 					var psi = new ProcessStartInfo("open") { UseShellExecute = false };

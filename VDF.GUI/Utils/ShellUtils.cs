@@ -22,24 +22,16 @@ namespace VDF.GUI.Utils;
 static partial class ShellUtils {
 	[SupportedOSPlatform("windows")]
 	public static void ShowInExplorer(string filePath) {
-		IntPtr pidlFolder = IntPtr.Zero;
-		IntPtr pidlFile = IntPtr.Zero;
+		IntPtr pidl = IntPtr.Zero;
 		try {
-			int hr = SHParseDisplayName(Path.GetDirectoryName(filePath)!, IntPtr.Zero, out pidlFolder, 0, out _);
-			if (hr != 0)
-				throw Marshal.GetExceptionForHR(hr) ?? new InvalidOperationException($"SHParseDisplayName failed for folder (0x{hr:X8})");
+			int hr = SHParseDisplayName(filePath, IntPtr.Zero, out pidl, 0, out _);
+			Marshal.ThrowExceptionForHR(hr);
 
-			hr = SHParseDisplayName(filePath, IntPtr.Zero, out pidlFile, 0, out _);
-			if (hr != 0)
-				throw Marshal.GetExceptionForHR(hr) ?? new InvalidOperationException($"SHParseDisplayName failed for file (0x{hr:X8})");
-
-			hr = SHOpenFolderAndSelectItems(pidlFolder, 1, [pidlFile], 0);
-			if (hr != 0)
-				throw Marshal.GetExceptionForHR(hr) ?? new InvalidOperationException($"SHOpenFolderAndSelectItems failed (0x{hr:X8})");
+			hr = SHOpenFolderAndSelectItems(pidl, 0, null, 0);
+			Marshal.ThrowExceptionForHR(hr);
 		}
 		finally {
-			if (pidlFolder != IntPtr.Zero) Marshal.FreeCoTaskMem(pidlFolder);
-			if (pidlFile != IntPtr.Zero) Marshal.FreeCoTaskMem(pidlFile);
+			if (pidl != IntPtr.Zero) Marshal.FreeCoTaskMem(pidl);
 		}
 	}
 
@@ -55,6 +47,6 @@ static partial class ShellUtils {
 	private static partial int SHOpenFolderAndSelectItems(
 		IntPtr pidlFolder,
 		uint cidl,
-		[MarshalAs(UnmanagedType.LPArray)] IntPtr[] apidl,
+		[In] IntPtr[]? apidl,
 		uint dwFlags);
 }
